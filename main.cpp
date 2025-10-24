@@ -13,7 +13,7 @@
 #include "Car.h"
 #include "AirVehicle.h"
 #include "Underground.h"
-#include "WaterVehiсle.h"
+#include "WaterVehicle.h"
 
 int main(int argc, char** argv) {
     using GraphType = AdjacencyList<City, Edge>;
