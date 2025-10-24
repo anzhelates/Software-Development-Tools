@@ -4,7 +4,7 @@
 #include "LandVehicle.h"
 #include "RailVehicle.h"
 #include "AirVehicle.h"
-#include "WaterVehiсle.h"
+#include "WaterVehicle.h"
 #include "Car.h"
 #include "Underground.h"
 #include "Route.h"
@@ -50,13 +50,16 @@ TEST_SUITE("EdgeTestSuite") {
         Edge* edge = new Edge(c1, c2, 120.0, RoadType::ROAD, RoadCharacteristic::HIGHWAY);
 
         SUBCASE("without obstacles") {
+            // speed on highway = 120.0
+            // travelTime = 120.0 / 120.0 = 1.0
             CHECK(edge->calculateTravelTime(*car) == doctest::Approx(1.0));
         }
 
         SUBCASE("with obstacles") {
-            auto* obs = new Obstacle{"Accident", 0.5, ObstacleCause::TRAFFIC_JAM};
+            auto* obs = new Obstacle{"Traffic jam", 0.5, ObstacleCause::TRAFFIC_JAM};
             edge->addObstacle(obs);
 
+            // ((distance) 120.0 / (100.0 * (highway factor) 1.3 * (traffic jam factor) 0.4)) + (delay) 0.5 = 2.3 + 0.5 = 2.8
             CHECK(edge->calculateTravelTime(*car) == doctest::Approx(2.80769));
         }
 
@@ -81,7 +84,10 @@ TEST_SUITE("RouteTestSuite") {
         Route route(A,B,&car);
         route.addEdge(AB);
         CHECK(route.totalTime(car) == std::numeric_limits<double>::infinity());
-        delete AB; delete A; delete B;
+
+        delete AB;
+        delete A;
+        delete B;
     }
 
     TEST_CASE("total distance, time, fuel") {
