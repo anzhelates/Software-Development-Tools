@@ -7,23 +7,10 @@
 #include "Graph.h"
 #include "Vehicle.h"
 
-/**
- * @class GraphAlgorithms
- * @brief Static methods for common graph algorithms
- */
 class GraphAlgorithms {
 public:
-    /**
-     * @brief Performs a Breadth-First Search starting from a given vertex ID
-     *
-     * @tparam TVertex The type of data stored in graph vertices
-     * @tparam TEdge The type of data stored on graph edges
-     * @param graph A constant reference to the graph to be traversed
-     * @param startId The ID of the starting vertex
-     * @return std::vector<int> A vector of vertex IDs in the order they were visited
-     */
     template <typename TVertex, typename TEdge>
-static std::vector<int> BFS(const Graph<TVertex, TEdge>& graph, int startId) {
+    static std::vector<int> BFS(const Graph<TVertex, TEdge>& graph, int startId) {
         std::vector<int> order;
         int n = graph.getNumberOfVertices();
         if (startId < 0 || startId >= n) return order;
@@ -35,31 +22,22 @@ static std::vector<int> BFS(const Graph<TVertex, TEdge>& graph, int startId) {
         q.push(startId);
 
         while (!q.empty()) {
-            int to = q.front(); q.pop();
-            order.push_back(to);
+            int current = q.front(); q.pop();
+            order.push_back(current);
 
-            std::vector<int> neighbors = graph.getNeighbors(to);
-            for (int from : neighbors) {
-                if (from >= 0 && from < n && !visited[from]) {
-                    visited[from] = true;
-                    q.push(from);
+            std::vector<int> neighbors = graph.getNeighbors(current);
+            for (int neighbor : neighbors) {
+                if (neighbor >= 0 && neighbor < n && !visited[neighbor]) {
+                    visited[neighbor] = true;
+                    q.push(neighbor);
                 }
             }
         }
         return order;
     }
 
-    /**
-     * @brief Performs a Depth-First Search starting from a given vertex ID
-     *
-     * @tparam TVertex The type of data stored in graph vertices
-     * @tparam TEdge The type of data stored on graph edges
-     * @param graph A constant reference to the graph to be traversed
-     * @param startId The ID of the starting vertex
-     * @return std::vector<int> A vector of vertex IDs in the order they were visited
-     */
     template <typename TVertex, typename TEdge>
-static std::vector<int> DFS(const Graph<TVertex, TEdge>& graph, int startId) {
+    static std::vector<int> DFS(const Graph<TVertex, TEdge>& graph, int startId) {
         std::vector<int> order;
         int n = graph.getNumberOfVertices();
         if (startId < 0 || startId >= n) return order;
@@ -69,32 +47,22 @@ static std::vector<int> DFS(const Graph<TVertex, TEdge>& graph, int startId) {
         st.push(startId);
 
         while (!st.empty()) {
-            int to = st.top(); st.pop();
-            if (!visited[to]) {
-                visited[to] = true;
-                order.push_back(to);
-                std::vector<int> neighbors = graph.getNeighbors(to);
+            int current = st.top(); st.pop();
+            if (!visited[current]) {
+                visited[current] = true;
+                order.push_back(current);
+                std::vector<int> neighbors = graph.getNeighbors(current);
                 for (int i = static_cast<int>(neighbors.size()) - 1; i >= 0; --i) {
-                    int from = neighbors[i];
-                    if (!visited[from]) st.push(from);
+                    int neighbor = neighbors[i];
+                    if (!visited[neighbor]) st.push(neighbor);
                 }
             }
         }
         return order;
     }
 
-    /**
-     * @brief Implements Dijkstra's algorithm to find the shortest paths from a starting vertex
-     * @details Edge weight is calculated as the travel time using the specified vehicle
-     * @tparam TVertex The type of data stored in graph vertices
-     * @tparam TEdge The type of data stored on graph edges
-     * @param graph A reference to the graph
-     * @param startId The ID of the starting vertex
-     * @param vehicle A reference to the vehicle used for travel time calculation
-     * @return std::vector<double> A vector of the shortest "time" distances from startId to all other vertices
-     */
     template <typename TVertex, typename TEdge>
-static std::vector<double> Dijkstra(const Graph<TVertex, TEdge>& graph, int startId, const Vehicle& vehicle) {
+    static std::vector<double> Dijkstra(const Graph<TVertex, TEdge>& graph, int startId, const Vehicle& vehicle) {
         int n = graph.getNumberOfVertices();
         std::vector<double> dist(n, std::numeric_limits<double>::infinity());
 
@@ -142,13 +110,7 @@ static std::vector<double> Dijkstra(const Graph<TVertex, TEdge>& graph, int star
         }
         return dist;
     }
-    /**
-     * @brief Checks if the graph is connected
-     * @tparam TVertex The type of data stored in graph vertices
-     * @tparam TEdge The type of data stored on graph edges
-     * @param graph A reference to the graph
-     * @return True if the graph is connected, false otherwise
-     */
+
     template <typename TVertex, typename TEdge>
     static bool isConnected(const Graph<TVertex, TEdge>& graph) {
         int n = graph.getNumberOfVertices();
@@ -161,29 +123,42 @@ static std::vector<double> Dijkstra(const Graph<TVertex, TEdge>& graph, int star
         int count = 1;
 
         while (!st.empty()) {
-            int from = st.top(); st.pop();
+            int current = st.top(); st.pop();
 
-            for (int to : graph.getNeighbors(from)) {
-                if (!visited[to]) {
-                    visited[to] = true;
-                    st.push(to);
+            for (int neighbor : graph.getNeighbors(current)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    st.push(neighbor);
                     count++;
                 }
             }
+        }
 
-            if (graph.isDirected()) {
-                for (auto* edge : graph.getEdges()) {
-                    if (edge->getTo() == from) {
-                        int pred = edge->getFrom();
-                        if (!visited[pred]) {
-                            visited[pred] = true;
-                            st.push(pred);
-                            count++;
-                        }
+        if (!graph.isDirected()) {
+            return count == n;
+        }
+
+        for (int i = 0; i < n; ++i) {
+            std::fill(visited.begin(), visited.end(), false);
+            std::stack<int> st2;
+            st2.push(i);
+            visited[i] = true;
+            int reachableCount = 1;
+
+            while (!st2.empty()) {
+                int current = st2.top(); st2.pop();
+                for (int neighbor : graph.getNeighbors(current)) {
+                    if (!visited[neighbor]) {
+                        visited[neighbor] = true;
+                        st2.push(neighbor);
+                        reachableCount++;
                     }
                 }
             }
+
+            if (reachableCount != n) return false;
         }
-        return count == n;
+
+        return true;
     }
 };
