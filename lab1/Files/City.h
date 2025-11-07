@@ -5,6 +5,7 @@
 
 /**
  * @file City.h
+ * @brief Declares the City class representing a city node
  * @class City
  * @brief Represents a city, inherits from Vertex
  */

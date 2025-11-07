@@ -4,6 +4,7 @@
 
 /**
  * @file LandVehicle.h
+ * @brief Declares the LandVehicle class for land-based transport
  * @class LandVehicle
  * @brief Represents a vehicle that travels on land
  */

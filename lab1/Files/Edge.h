@@ -8,6 +8,7 @@
 
 /**
  * @file Edge.h
+ * @brief Declares the Edge class representing a connection between two cities with travel conditions
  * @struct Obstacle
  * @brief Represents an obstacle that can affect travel time
  */

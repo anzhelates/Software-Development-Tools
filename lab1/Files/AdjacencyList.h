@@ -7,6 +7,7 @@
 
 /**
  * @file AdjacencyList.h
+ * @brief Defines the AdjacencyList class for Graph representation using adjacency list
  * @class AdjacencyList
  * @brief Represents a Graph using an adjacency list
  * @tparam TVertex The type of data stored in a vertex

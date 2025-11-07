@@ -3,6 +3,7 @@
 
 /**
  * @file Car.h
+ * @brief Declares the Car class representing a land vehicle
  * @class Car
  * @brief Represents a car, inherits from LandVehicle
  */

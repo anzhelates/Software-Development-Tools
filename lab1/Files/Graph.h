@@ -7,6 +7,7 @@
 
 /**
  * @file Graph.h
+ * @brief Declares the Graph class providing core graph structure and operations
  * @class Graph
  * @brief An abstract base class for graph data structures
  * The graph manages the memory of the vertices and edges added to it

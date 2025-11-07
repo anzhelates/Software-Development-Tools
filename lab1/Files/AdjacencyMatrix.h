@@ -6,6 +6,7 @@
 
 /**
  * @file AdjacencyMatrix.h
+ * @brief  Defines AdjacencyMatrix class for Graph representation using adjacency matrix
  * @class AdjacencyMatrix
  * @brief Represents a graph using an adjacency matrix
  * @tparam TVertex The type of data stored in a vertex

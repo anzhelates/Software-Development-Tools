@@ -11,6 +11,7 @@ template <typename TVertex, typename TEdge> class AdjacencyMatrix;
 
 /**
  * @file Vertex.h
+ * @brief Declares the Vertex class representing a graph node
  * @class Vertex
  * @brief Represents a vertex in a graph
  * @details A vertex has a unique ID, a name, and can have a list of available vehicles

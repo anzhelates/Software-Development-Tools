@@ -10,6 +10,7 @@
 
 /**
  * @file GraphAlgorithm.h
+ * @brief Implementation of BFS, DFS, Dijkstra's algorithm and isConnected method
  * @class GraphAlgorithms
  * @brief Static methods for common graph algorithms
  */

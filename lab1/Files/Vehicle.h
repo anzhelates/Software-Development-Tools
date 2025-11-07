@@ -8,6 +8,7 @@ class City;
 
 /**
  * @file Vehicle.h
+ * @brief Declares the Vehicle class for all vehicle types
  * @class Vehicle
  * @brief An abstract base class for all types of vehicles
  * @details Common interface for vehicles, including calculating speed under various conditions and fuel consumption

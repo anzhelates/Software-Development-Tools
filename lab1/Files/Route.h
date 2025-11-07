@@ -8,6 +8,7 @@
 
 /**
  * @file Route.h
+ * @brief Declares the Route class describing a path, distance, and traversal data between cities
  * @class Route
  * @brief Represents a calculated path from a start vertex to an end vertex
  * @details Provides methods to calculate total time, distance, and fuel consumption

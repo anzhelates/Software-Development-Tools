@@ -4,6 +4,7 @@
 
 /**
  * @file RailVehicle.h
+ * @brief Declares the RailVehicle class representing railway transport
  * @class RailVehicle
  * @brief Represents a vehicle that travels on rails
  */

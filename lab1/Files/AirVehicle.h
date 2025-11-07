@@ -4,6 +4,7 @@
 
 /**
  * @file AirVehicle.h
+ * @brief Declares the AirVehicle class representing an air-based transport
  * @class AirVehicle
  * @brief Represents a vehicle that can fly
  */

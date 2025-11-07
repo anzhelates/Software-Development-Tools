@@ -3,6 +3,7 @@
 
 /**
  * @file Underground.h
+ * @brief Declares the Underground class representing underground transport
  * @class Underground
  * @brief Represents an underground train, a specific type of rail vehicle
  */
