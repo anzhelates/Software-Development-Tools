@@ -1,19 +1,42 @@
 #include "doctest.h"
-
 #include "AdjacencyList.h"
 #include "City.h"
 #include "Edge.h"
 #include <algorithm>
+#include <stdexcept>
 
+/**
+ * @file AdjacencyListTest.cpp
+ * @brief Unit tests for the AdjacencyList class.
+ */
+
+/**
+ * @brief Helper function to create a new Edge
+ * @param from Pointer to the source vertex
+ * @param to Pointer to the destination vertex
+ * @param dist Distance of the edge (default 10.0)
+ * @param type Road type of the edge (default ROAD)
+ * @param rc Road characteristic of the edge (default STANDARD)
+ * @return Pointer to the newly created Edge
+ */
 static Edge* makeEdge(Vertex* from, Vertex* to, double dist = 10.0, RoadType type = RoadType::ROAD, RoadCharacteristic rc = RoadCharacteristic::STANDARD) {
     Edge* edge = new Edge(from, to, dist, type, rc);
     return edge;
 }
 
+/**
+ * @brief Helper function to create a new City
+ * @param name The name of the city
+ * @param population The population of the city (default 1000)
+ * @return Pointer to the newly created City
+ */
 static City* makeCity(const std::string& name, long population = 1000) {
     return new City(name, population);
 }
 
+/**
+ * @brief Tests basic vertex operations: addVertex, getVertexById and getNumberOfVertices
+ */
 TEST_CASE("basic vertex operations") {
     AdjacencyList<City, Edge> g(false);
 
@@ -34,6 +57,9 @@ TEST_CASE("basic vertex operations") {
     CHECK(g.getVertexById(id2)->isActive());
 }
 
+/**
+ * @brief Tests edge operations in an undirected graph
+ */
 TEST_CASE("addEdge, getNeighbors, getEdge and getEdgesFrom undirected") {
     AdjacencyList<City, Edge> g(false);
 
@@ -51,6 +77,10 @@ TEST_CASE("addEdge, getNeighbors, getEdge and getEdgesFrom undirected") {
     g.addEdge(e1);
     g.addEdge(e2);
 
+    /**
+     * @brief Checks 'getNeighbors' for undirected graph
+     * @details Verifies that if A is connected to B, B is also connected to A
+     */
     SUBCASE("getNeighbors") {
         auto n1 = g.getNeighbors(id1);
         auto n2 = g.getNeighbors(id2);
@@ -64,11 +94,18 @@ TEST_CASE("addEdge, getNeighbors, getEdge and getEdgesFrom undirected") {
         CHECK(n3.size() == 1);
         CHECK(n3[0] == id2);
     }
+    /**
+     * @brief Checks 'getEdge' for undirected graph
+     * @details Verifies 'getEdge(A, B)' and 'getEdge(B, A)' return the same edge
+     */
     SUBCASE("getEdge") {
         CHECK(g.getEdge(id1, id2) == e1);
         CHECK(g.getEdge(id2, id1) == e1);
         CHECK(g.getEdge(id1, id3) == nullptr);
     }
+    /**
+     * @brief Checks 'getEdgesFrom' for undirected graph
+     */
     SUBCASE("getEdgesFrom") {
         auto edgesFrom2 = g.getEdgesFrom(id2);
         CHECK(edgesFrom2.size() == 2);
@@ -77,6 +114,10 @@ TEST_CASE("addEdge, getNeighbors, getEdge and getEdgesFrom undirected") {
     }
 }
 
+/**
+ * @brief Tests edge operations in a directed graph
+ * @details Verifies that 'getNeighbors' and 'getEdge' match the edge direction
+ */
 TEST_CASE("directed edge") {
     AdjacencyList<City, Edge> g(true);
 
@@ -99,6 +140,9 @@ TEST_CASE("directed edge") {
     CHECK(g.getEdge(id_b, id_a) == nullptr);
 }
 
+/**
+ * @brief Tests the 'removeEdge' and 'removeVertex' methods
+ */
 TEST_CASE("removeEdge and removeVertex") {
     AdjacencyList<City, Edge> g(false);
     auto* a = makeCity("A", 1000);
@@ -126,6 +170,10 @@ TEST_CASE("removeEdge and removeVertex") {
     CHECK(g.getEdge(id_a, id_c) == e3);
 }
 
+/**
+ * @brief Tests 'getEdge' for correctness and handling of invalid IDs
+ * @throws std::out_of_range Checks that this exception is thrown for invalid IDs
+ */
 TEST_CASE("getEdge correctness and invalid IDs") {
     AdjacencyList<City, Edge> g(true);
     auto* a = makeCity("A", 1000);
@@ -139,10 +187,14 @@ TEST_CASE("getEdge correctness and invalid IDs") {
     CHECK(g.getEdge(id_a, id_b) == e);
     CHECK(g.getEdge(id_b, id_a) == nullptr);
 
-    CHECK(g.getEdge(5, 1) == nullptr);
-    CHECK(g.getEdge(-1, 0) == nullptr);
+    CHECK_THROWS_AS(g.getEdge(5, 1), std::out_of_range);
+    CHECK_THROWS_AS(g.getEdge(-1, 0), std::out_of_range);
+    CHECK_THROWS_AS(g.getEdge(id_a, 100), std::out_of_range);
 }
 
+/**
+ * @brief Tests the sum of all edge distances in the graph
+ */
 TEST_CASE("edge distances sum") {
     AdjacencyList<City, Edge> g(false);
     auto* a = makeCity("A", 1000);
@@ -168,26 +220,30 @@ TEST_CASE("edge distances sum") {
     CHECK(total == doctest::Approx(55.0));
 }
 
+/**
+ * @brief Tests boundary and error conditions for various graph methods
+ * @throws std::out_of_range Confirms thrown for out-of-bounds IDs
+ * @throws std::invalid_argument Confirms thrown for null pointers
+ */
 TEST_CASE("boundary and error conditions") {
     AdjacencyList<City, Edge> g(false);
     auto* a = makeCity("A");
     int id_a = g.addVertex(a);
 
-    CHECK(g.getNeighbors(-1).empty());
-    CHECK(g.getNeighbors(100).empty());
-    CHECK(g.getEdge(-1, id_a) == nullptr);
-    CHECK(g.getEdge(id_a, 100) == nullptr);
-    CHECK(g.getEdgesFrom(-1).empty());
-    CHECK(g.getEdgesFrom(100).empty());
-    CHECK(g.getVertexById(-1) == nullptr);
-    CHECK(g.getVertexById(100) == nullptr);
+    CHECK_THROWS_AS(g.getNeighbors(-1), std::out_of_range);
+    CHECK_THROWS_AS(g.getNeighbors(100), std::out_of_range);
+    CHECK_THROWS_AS(g.getEdge(-1, id_a), std::out_of_range);
+    CHECK_THROWS_AS(g.getEdge(id_a, 100), std::out_of_range);
+    CHECK_THROWS_AS(g.getEdgesFrom(-1), std::out_of_range);
+    CHECK_THROWS_AS(g.getEdgesFrom(100), std::out_of_range);
+    CHECK_THROWS_AS(g.getVertexById(-1), std::out_of_range);
+    CHECK_THROWS_AS(g.getVertexById(100), std::out_of_range);
+    CHECK_THROWS_AS(g.removeVertex(-1), std::out_of_range);
+    CHECK_THROWS_AS(g.removeVertex(100), std::out_of_range);
 
-    CHECK(g.addVertex(nullptr) == -1);
-    g.addEdge(nullptr);
-    g.removeEdge(nullptr);
-
-    g.removeVertex(-1);
-    g.removeVertex(100);
+    CHECK_THROWS_AS(g.addVertex(nullptr), std::invalid_argument);
+    CHECK_THROWS_AS(g.addEdge(nullptr), std::invalid_argument);
+    CHECK_THROWS_AS(g.removeEdge(nullptr), std::invalid_argument);
 
     CHECK(g.getNumberOfVertices() == 1);
     CHECK(g.getVertexById(id_a) == a);
