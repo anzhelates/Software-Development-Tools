@@ -4,7 +4,7 @@
 
 /**
  * @file WaterVehicle.h
- * @briefDeclares the WaterVehicle class representing water-based transport
+ * @brief Declares the WaterVehicle class representing water-based transport
  * @class WaterVehicle
  * @brief Represents a vehicle that travels on water
  */
