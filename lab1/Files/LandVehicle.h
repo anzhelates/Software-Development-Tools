@@ -21,11 +21,11 @@ public:
 
     /**
      * @brief Calculates the effective speed considering obstacles and road types
-     * @param cause The cause of the obstacle (TRAFFIC_JAM,...)
-     * @param road The characteristic of the road (HIGHWAY,...)
+     * @param cause The cause of the obstacle ( TRAFFIC_JAM, ACCIDENT, CONSTRUCTION, WEATHER_STORM, WEATHER_SNOW, WEATHER_WIND, WEATHER_ICE, CUSTOM_DELAY )
+     * @param characteristic The characteristic of the road ( HIGHWAY, CITY_STREET, DIRT_ROAD, PARK_ROAD, STANDARD, DENSELY_POPULATED_CITY, OTHER )
      * @return The speed in km/h
      */
-    double getSpeed(ObstacleCause cause, RoadCharacteristic road) const override {
+    double getSpeed(ObstacleCause cause, RoadCharacteristic characteristic) const override {
         double factor = 1.0;
         switch (cause) {
             case ObstacleCause::TRAFFIC_JAM: factor *= 0.6; break;
@@ -37,7 +37,7 @@ public:
             default: break;
         }
 
-        switch (road) {
+        switch (characteristic) {
             case RoadCharacteristic::STANDARD: factor *= 1.0; break;
             case RoadCharacteristic::HIGHWAY: factor *= 1.2; break;
             case RoadCharacteristic::CITY_STREET: factor *= 0.8; break;

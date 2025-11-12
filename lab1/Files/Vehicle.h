@@ -39,7 +39,7 @@ class Vehicle {
 
         virtual ~Vehicle() = default;
 
-        /** @brief m_name getter */
+        /** @brief Get name of the vehicle */
         const std::string& getName() const { return m_name; }
 
         /**

@@ -25,10 +25,18 @@ class Vertex {
         bool m_active = true; ///< Checks whether the vertex is currently usable
 
     protected:
-        /** @brief Sets the ID of the vertex */
+        /**
+         * @brief Sets the ID of the vertex
+         * @param id The new ID for the vertex
+         */
         void setId(int id) { m_id = id; }
 
     public:
+        /**
+         * @brief Default constructor for Vertex
+         * @details Creates a vertex with an empty name and default values
+         * The ID is set to -1 and the vertex is active by default
+         */
         Vertex() : m_name() {}
 
         /**
@@ -43,7 +51,7 @@ class Vertex {
         }
 
         /**
-         * @brief Virtual destructor
+         * @brief Virtual Vertex destructor
          * @details Deletes all available vehicles owned by this vertex
          */
         virtual ~Vertex() {
@@ -53,9 +61,20 @@ class Vertex {
             m_availableVehicles.clear();
         }
 
-        /** @brief Getters */
+        /**
+         * @brief Gets the ID of the vertex
+         * @return The ID of the vertex
+         */
         int getId() const { return m_id; }
+        /**
+         * @brief Gets the name of the vertex
+         * @return The name of the vertex
+         */
         const std::string& getName() const { return m_name; }
+        /**
+         * @brief Gets the vehicles available for the particular vertex (City)
+         * @return The vehicles available for the vertex (City)
+         */
         const std::vector<Vehicle*>& getAvailableVehicles() const { return m_availableVehicles; }
 
         /**
@@ -66,7 +85,10 @@ class Vertex {
 
         /** @brief Marks the vertex as inactive */
         void markInactive() { m_active = false; }
-        /** @brief Checks Whether the vertex is active */
+        /**
+         * @brief Checks whether the vertex is active
+         * @return True if the vertex is active, false otherwise
+         */
         bool isActive() const { return m_active; }
 
         /** @brief Friend class declarations to allow Graph implementations to call setId */

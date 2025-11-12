@@ -51,6 +51,17 @@ public:
      * @param edge A pointer to the edge to add
      * @throws std::invalid_argument If the edge pointer is null, or its source/destination is null
      * @throws std::out_of_range If the edge's vertex IDs are invalid for the current matrix size
+     * @example
+     * @code
+     * AdjacencyMatrix<MyVertex, MyEdge> graph(false); // directed = false
+     *
+     * int A = graph.addVertex(new MyVertex("A")); // 0
+     * int B = graph.addVertex(new MyVertex("B")); // 1
+     *
+     * graph.addEdge(new MyEdge(graph.getVertexById(A), graph.getVertexById(B), 10)); // A <-> B
+     * // Get neighbors to the vertex A
+     * auto neighborsA = graph.getNeighbors(A); // {1}
+     * @endcode
      */
     void addEdge(TEdge* edge) override {
         if (!edge || !edge->getSource() || !edge->getDestination()) {

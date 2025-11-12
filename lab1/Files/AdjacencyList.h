@@ -66,14 +66,19 @@ public:
      * @throws std::invalid_argument If the edge pointer is null, or its source/destination is null
      * @throws std::out_of_range If the edge's vertex IDs are invalid for the current graph size
      *
-     * @example AdjacencyList.h
+     * @example
      * @code
-     * // Example
-     * try {
-     * graph.addEdge(new Edge(cityA, cityB, 100));
-     * } catch (const std::exception& e) {
-     * std::cerr << "Error: " << e.what() << std::endl;
-     * }
+     * AdjacencyList<MyVertex, MyEdge> graph(true); // directed = true
+     *
+     * int A = graph.addVertex(new MyVertex("A")); // 0
+     * int B = graph.addVertex(new MyVertex("B")); // 1
+     * int C = graph.addVertex(new MyVertex("C")); // 2
+     *
+     * graph.addEdge(new MyEdge(graph.getVertexById(A), graph.getVertexById(B), 5)); // A -> B
+     * graph.addEdge(new MyEdge(graph.getVertexById(A), graph.getVertexById(C), 7)); // A -> C
+     *
+     * // Getting neighbors of the vertex A
+     * auto neighbors = graph.getNeighbors(A); // {1, 2}
      * @endcode
      */
     void addEdge(TEdge* edge) override {

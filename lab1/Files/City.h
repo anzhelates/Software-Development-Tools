@@ -31,14 +31,15 @@ public:
      * @brief Checks if the city is considered densely populated
      * @return True if the population is 1000000 or more, false otherwise
      *
-     * @example City.h
+     * @example
      * @code
-     * // Example
      * City kyiv("Kyiv", 2800000);
-     * bool isDense = kyiv.isDenselyPopulated(); // returns true
+     * std::cout << kyiv.getName() << " dense: "
+     *           << kyiv.isDenselyPopulated() << std::endl; // true
      *
      * City lviv("Lviv", 720000);
-     * bool isDense2 = lviv.isDenselyPopulated(); // returns false
+     * std::cout << lviv.getName() << " dense: "
+     *           << lviv.isDenselyPopulated() << std::endl; // false
      * @endcode
      */
     bool isDenselyPopulated() const {

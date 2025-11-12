@@ -101,16 +101,19 @@ public:
      * @return std::vector<double> A vector of the shortest "time" distances from startId to all other vertices
      * @throws std::out_of_range If the startId is invalid
      *
-     * @example GraphAlgorithm.h
+     * @example
      * @code
-     * // Example
-     * Car myCar("Car", 100, 8);
-     * try {
-     *     std::vector<double> times = GraphAlgorithms::Dijkstra(graph, 0, myCar);
-     *     std::cout << "Time to vertex 1: " << times[1] << " hours." << std::endl;
-     * } catch (const std::out_of_range& e) {
-     *     std::cerr << "Error: Invalid start vertex" << std::endl;
-     * }
+     * AdjacencyList<City, Road> graph(true);
+     * int a = graph.addVertex(new City("A", 500000));
+     * int b = graph.addVertex(new City("B", 1200000));
+     *
+     * Car car("Car", 100, 7.5);
+     *
+     * graph.addEdge(new Road(graph.getVertexById(a), graph.getVertexById(b), 150));
+     * auto times = GraphAlgorithms::Dijkstra(graph, a, car);
+     *
+     * std::cout << "Time from A to B: " << times[b] << " h" << std::endl;
+     * // Expected: 150 km / 100 km/h = 1.5 h
      * @endcode
      */
     template <typename TVertex, typename TEdge>
@@ -170,7 +173,19 @@ public:
      * @tparam TEdge The type of data stored on graph edges
      * @param graph A reference to the graph
      * @return True if connected (or strongly connected), false otherwise
+     *
+     * @example
+     * @code
+     * AdjacencyMatrix<City, Road> graph(false); // undirected
+     * int a = graph.addVertex(new City("A", 500000));
+     * int b = graph.addVertex(new City("B", 800000));
+     *
+     * graph.addEdge(new Road(graph.getVertexById(a), graph.getVertexById(b), 90));
+     *
+     * bool connected = GraphAlgorithms::isConnected(graph); // true
+     * @endcode
      */
+
     template <typename TVertex, typename TEdge>
     static bool isConnected(const Graph<TVertex, TEdge>& graph) {
         int n = graph.getNumberOfVertices();

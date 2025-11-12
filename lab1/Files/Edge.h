@@ -55,16 +55,18 @@ class Edge {
          */
         void addObstacle(Obstacle* obstacle);
 
-        Vertex* getSource() const { return m_source; } /** @brief gets the source vertex */
-        Vertex* getDestination() const { return m_destination; } /** @brief gets the destination vertex */
+        Vertex* getSource() const { return m_source; } /** @brief Gets the source vertex */
+        Vertex* getDestination() const { return m_destination; } /** @brief Gets the destination vertex */
         double getDistance() const { return m_distance; } /** @brief Gets the distance of the edge */
-        RoadType getType() const { return m_type; }  /** @brief gets the road type */
-        RoadCharacteristic getCharacteristic() const { return m_characteristic; } /** @brief Gets the road characteristic */
-        std::vector<Obstacle*> getObstacles() const { return m_obstacles; } /** @brief Gets the list of obstacles on the edge */
+        RoadType getType() const { return m_type; }  /** @brief Gets the road type (ROAD, RAIL, AIR, WATER) */
+        RoadCharacteristic getCharacteristic() const { return m_characteristic; } /** @brief Gets the road characteristic (HIGHWAY, CITY_STREET, DIRT_ROAD, PARK_ROAD, STANDARD, DENSELY_POPULATED_CITY, OTHER) */
+        std::vector<Obstacle*> getObstacles() const { return m_obstacles; } /** @brief Gets the list of obstacles on the edge (TRAFFIC_JAM, ACCIDENT, CONSTRUCTION, WEATHER_STORM, WEATHER_SNOW, WEATHER_WIND, WEATHER_ICE, CUSTOM_DELAY) */
 
-        /** @brief getFrom() gets the ID of the source vertex, getTo() gets the ID of the destination vertex
-         * @return the integer ID, or -1 if source/destination is null */
+        /** @brief Gets the ID of the source vertex
+         * @return the integer ID, or -1 if source is null */
         int getFrom() const { return m_source ? m_source->getId() : -1; }
+        /** @brief Gets the ID of the destination vertex
+         * @return the integer ID, or -1 if destination is null */
         int getTo() const { return m_destination ? m_destination->getId() : -1; }
 
         /**
@@ -74,11 +76,11 @@ class Edge {
          */
         double calculateTravelTime(const Vehicle& vehicle) const;
 
-        /** @brief markInactive() marks the edge as inactive (cannot be used)
-         * markActive() marks the edge as active (can be used)
-         * isActive() checks if the edge is active
-         */
+        /** @brief Marks the edge as inactive (cannot be used) */
         void markInactive() { m_active = false; }
+        /** Marks the edge as active (can be used) */
         void markActive() { m_active = true; }
+        /** Checks if the edge is active
+         * @return true if the edge is active, false otherwise */
         bool isActive() const { return m_active; }
 };

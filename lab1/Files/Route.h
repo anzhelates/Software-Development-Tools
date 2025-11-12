@@ -38,19 +38,43 @@ class Route {
             }
         }
 
-        /** @brief Setters and getters */
+        /**
+         * @brief Sets the vehicle for the particular route
+         * @param vehicle Pointer to the vehicle to assign
+         */
         void setVehicle(const Vehicle* vehicle) { m_vehicle = vehicle; }
+        /**
+         * @brief Sets the starting vertex of the route
+         * @param start Pointer to the start vertex
+         * @throws std::invalid_argument if the start vertex if nullptr
+         */
         void setStart(Vertex* start) {
             if (!start) throw std::invalid_argument("Start vertex cannot be null");
             m_startVertex = start;
         }
+        /**
+         * @brief Sets the ending vertex of the route
+         * @param end Pointer to the end vertex
+         * @throws std::invalid_argument if end is nullptr
+         */
         void setEnd(Vertex* end) {
             if (!end) throw std::invalid_argument("End vertex cannot be null");
             m_endVertex = end;
         }
-
+        /**
+         * @brief Gets the starting vertex of the route
+         * @return Pointer to the start vertex
+         */
         Vertex* getStart() const { return m_startVertex; }
+        /**
+         * @brief Gets the ending vertex of the route
+         * @return Pointer to the end vertex
+         */
         Vertex* getEnd() const { return m_endVertex; }
+        /**
+         * @brief Gets the vehicle assigned to this route
+         * @return Pointer to the assigned vehicle
+         */
         const Vehicle* getVehicle() const { return m_vehicle; }
 
         /** @brief Adds an edge to the end of the path */
@@ -63,17 +87,25 @@ class Route {
          * @param vehicle The vehicle used for travel
          * @return The total time in hours
          *
-         * @example Route.h
+         * @example
          * @code
-         * // Example
-         * Vertex* cityA = new Vertex("CityA");
-         * Vertex* cityB = new Vertex("CityB");
-         * Car myCar("MyCar", 100, 8);
-         * Route myRoute(cityA, cityB, &myCar);
-         * Edge* edgeAB = new Edge(cityA, cityB, 120.0, RoadType::ROAD, RoadCharacteristic::STANDARD);
-         * myRoute.addEdge(edgeAB);
-         * double time = myRoute.totalTime(myCar);
-         * std::cout << "Total time: " << time << " hours." << std::endl;
+         * City* cityA = new City("A", 500000);
+         * City* cityB = new City("B", 1200000);
+         * City* cityC = new City("C", 900000);
+         *
+         * Car car("Car", 100, 7.5);
+         * Route route(cityA, cityC, &car);
+         * // Add the route A -> B -> C
+         * Edge* AB = new Road(cityA, cityB, 120);
+         * Edge* BC = new Road(cityB, cityC, 80);
+         * route.addEdge(AB);
+         * route.addEdge(BC);
+         *
+         * double time = route.totalTime(car); // 2.0 h (≈120/100 + 80/100)
+         * double distance = route.totalDistance(); // 200 km
+         * double fuel = route.totalFuel(car); // 15 l (≈7.5 l/100 km * 200)
+         *
+         * std::cout << "Time: " << time << " h, Distance: " << distance << " km, Fuel: " << fuel << " l" << std::endl;
          * @endcode
          */
         double totalTime(const Vehicle& vehicle) const {
