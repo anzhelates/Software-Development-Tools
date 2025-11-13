@@ -9,7 +9,23 @@
 #include "LandVehicle.h"
 #include <algorithm>
 #include <limits>
+#include <stdexcept>
 
+/**
+ * @file GraphAlgorithmTest.cpp
+ * @brief Unit tests for the GraphAlgorithms class
+ * @details Tests for BFS, DFS, Dijkstra's algorithm, and connectivity checks (isConnected)
+ */
+
+/**
+ * @brief Helper function to build a simple 3-vertex graph
+ * @tparam TGraph The type of graph (AdjacencyList or AdjacencyMatrix)
+ * @param g A reference to the graph object
+ * @param[out] idA The integer ID assigned to vertex 'A'
+ * @param[out] idB The integer ID assigned to vertex 'B'
+ * @param[out] idC The integer ID assigned to vertex 'C'
+ * @details Adds three cities (A, B, C) and three edges (A-B, B-C, A-C) to the given graph
+ */
 template<typename TGraph>
 void buildSimpleGraph(TGraph& g, int& idA, int& idB, int& idC) {
     City* a = new City("A", 1000);
@@ -27,12 +43,18 @@ void buildSimpleGraph(TGraph& g, int& idA, int& idB, int& idC) {
 
 
 TEST_SUITE("BFSTestSuite") {
+    /**
+     * @brief Tests BFS on an empty graph
+     * @throws std::out_of_range Thrown because the startId does not exist in the graph
+     */
     TEST_CASE("empty graph") {
         AdjacencyList<City, Edge> g(true);
-        auto res = GraphAlgorithms::BFS(g, 0);
-        CHECK(res.empty());
+        CHECK_THROWS_AS(GraphAlgorithms::BFS(g, 0), std::out_of_range);
     }
 
+    /**
+     * @brief Tests BFS on a graph with a single vertex
+     */
     TEST_CASE("single vertex") {
         AdjacencyList<City, Edge> g(true);
         City* a = new City("A", 1000);
@@ -42,6 +64,9 @@ TEST_SUITE("BFSTestSuite") {
         CHECK(res[0] == idA);
     }
 
+    /**
+     * @brief Tests BFS on a simple 3-node connected graph
+     */
     TEST_CASE("simple undirected graph") {
         AdjacencyList<City, Edge> g(false);
         int idA, idB, idC;
@@ -54,25 +79,33 @@ TEST_SUITE("BFSTestSuite") {
         CHECK(std::find(res.begin(), res.end(), idC) != res.end());
     }
 
+    /**
+     * @brief Tests BFS with invalid start IDs
+     * @throws std::out_of_range Expected for both sub-checks
+     */
     TEST_CASE("invalid start ID") {
         AdjacencyList<City, Edge> g(false);
         int idA, idB, idC;
         buildSimpleGraph(g, idA, idB, idC);
 
-        auto res_neg = GraphAlgorithms::BFS(g, -1);
-        CHECK(res_neg.empty());
-        auto res_oob = GraphAlgorithms::BFS(g, 100);
-        CHECK(res_oob.empty());
+        CHECK_THROWS_AS(GraphAlgorithms::BFS(g, -1), std::out_of_range);
+        CHECK_THROWS_AS(GraphAlgorithms::BFS(g, 100), std::out_of_range);
     }
 }
 
 TEST_SUITE("DFSTestSuite") {
+    /**
+     * @brief Tests DFS on an empty graph
+     * @throws std::out_of_range Thrown because the startId does not exist in the graph
+     */
     TEST_CASE("empty graph") {
         AdjacencyMatrix<City, Edge> g(true);
-        auto res = GraphAlgorithms::DFS(g, 0);
-        CHECK(res.empty());
+        CHECK_THROWS_AS(GraphAlgorithms::DFS(g, 0), std::out_of_range);
     }
 
+    /**
+     * @brief Tests DFS on a simple 3-node connected graph
+     */
     TEST_CASE("simple graph") {
         AdjacencyMatrix<City, Edge> g(false);
         int idA, idB, idC;
@@ -85,19 +118,24 @@ TEST_SUITE("DFSTestSuite") {
         CHECK(std::find(res.begin(), res.end(), idC) != res.end());
     }
 
+    /**
+     * @brief Tests DFS with invalid start IDs
+     * @throws std::out_of_range Expected for both sub-checks
+     */
     TEST_CASE("invalid start ID") {
         AdjacencyMatrix<City, Edge> g(false);
         int idA, idB, idC;
         buildSimpleGraph(g, idA, idB, idC);
 
-        auto res_neg = GraphAlgorithms::DFS(g, -1);
-        CHECK(res_neg.empty());
-        auto res_oob = GraphAlgorithms::DFS(g, 100);
-        CHECK(res_oob.empty());
+        CHECK_THROWS_AS(GraphAlgorithms::DFS(g, -1), std::out_of_range);
+        CHECK_THROWS_AS(GraphAlgorithms::DFS(g, 100), std::out_of_range);
     }
 }
 
 TEST_SUITE("DijkstraTestSuite") {
+    /**
+     * @brief Tests Dijkstra's algorithm in a directed graph with an unreachable vertex
+     */
     TEST_CASE("unreachable vertices") {
         AdjacencyList<City, Edge> g(true);
         City* a = new City("A", 1000);
@@ -113,6 +151,9 @@ TEST_SUITE("DijkstraTestSuite") {
         CHECK(dist[idB] == std::numeric_limits<double>::infinity());
     }
 
+    /**
+     * @brief Tests Dijkstra's algorithm on a simple undirected graph
+     */
     TEST_CASE("shortest path undirected") {
         AdjacencyList<City, Edge> g(false);
         int idA, idB, idC;
@@ -122,21 +163,14 @@ TEST_SUITE("DijkstraTestSuite") {
         auto dist = GraphAlgorithms::Dijkstra(g, idA, car);
 
         REQUIRE(dist.size() == 3);
-
-        /*
-            distances: 10.0, 20.0, 50.0
-            dist[A] = 0.0
-            dist[B] = travelTime(A->B) = (distance) 10.0 / (speed) 100.0 = 0.1
-            dist[C] = min(travelTime(A->C), travelTime(A->B->C))
-            travelTime(A->C) = (distance) 50.0 / (speed) 100.0 = 0.5
-            travelTime(A->B->C) = travelTime(A->B) + travelTime(B->C) = 0.1 + ((distance) 20.0 / (speed) 100.0) = 0.1 + 0.2 = 0.3
-            min(0.5, 0.3) = 0.3
-        */
         CHECK(dist[idA] == doctest::Approx(0.0));
         CHECK(dist[idB] == doctest::Approx(0.1));
         CHECK(dist[idC] == doctest::Approx(0.3));
     }
 
+    /**
+     * @brief Tests Dijkstra's algorithm on an edge with an obstacle
+     */
     TEST_CASE("obstacle impact") {
         AdjacencyList<City, Edge> g(true);
         City* a = new City("A", 1000);
@@ -152,14 +186,12 @@ TEST_SUITE("DijkstraTestSuite") {
         auto dist = GraphAlgorithms::Dijkstra(g, idA, car);
 
         REQUIRE(dist.size() == 2);
-        /*
-            Traffic jam factor for Car = 0.4
-            travelTime = (distance / speed) + delayHours
-            travelTime = (100.0 / 40.0) + 2.0 = 2.5 + 2.0 = 4.5
-        */
         CHECK(dist[idB] == doctest::Approx(4.5));
     }
 
+    /**
+     * @brief Tests Dijkstra's algorithm on a directed graph with no forward path
+    */
     TEST_CASE("directed graph unreachable") {
         AdjacencyList<City, Edge> g(true);
         City* a = new City("A", 1000);
@@ -175,6 +207,9 @@ TEST_SUITE("DijkstraTestSuite") {
         CHECK(dist[idB] == std::numeric_limits<double>::infinity());
     }
 
+    /**
+     * @brief Tests Dijkstra's algorithm on an edge with multiple obstacles
+     */
     TEST_CASE("multiple obstacles on one edge") {
         AdjacencyList<City, Edge> g(true);
         City* a = new City("A", 1000);
@@ -190,15 +225,12 @@ TEST_SUITE("DijkstraTestSuite") {
         Car car("Car", 100, 8);
         auto dist = GraphAlgorithms::Dijkstra(g, idA, car);
 
-        /*
-            delayHours = (traffic jam delay) 2.0 + (construction delay) 1.0 = 3.0
-            speed = min(speed_normal, speed_jam, speed_construction)
-            traffic jam speed = 100 / 0.4 = 40, construction speed = 80 => speed = 40.
-            travelTime = ((distance) 100.0 / (speed) 40.0) + (dalayHours) 3.0 = 5.5
-        */
         CHECK(dist[idB] == doctest::Approx(5.5));
     }
 
+    /**
+     * @brief Tests Dijkstra's algorithm with different vehicle types
+     */
     TEST_CASE("bike slower than car") {
         AdjacencyList<City, Edge> g(false);
         City* a = new City("A", 1000);
@@ -220,27 +252,26 @@ TEST_SUITE("DijkstraTestSuite") {
         CHECK(distBike[idB] == doctest::Approx(5.0));
     }
 
+    /**
+     * @brief Tests Dijkstra's algorithm with invalid start IDs
+     * @throws std::out_of_range Expected for both sub-checks
+     */
     TEST_CASE("invalid start ID") {
         AdjacencyList<City, Edge> g(false);
         int idA, idB, idC;
         buildSimpleGraph(g, idA, idB, idC);
         Car car("Car", 100, 8);
 
-        auto dist_neg = GraphAlgorithms::Dijkstra(g, -1, car);
-
-        REQUIRE(dist_neg.size() == g.getNumberOfVertices());
-        CHECK(dist_neg[idA] == std::numeric_limits<double>::infinity());
-        CHECK(dist_neg[idB] == std::numeric_limits<double>::infinity());
-        CHECK(dist_neg[idC] == std::numeric_limits<double>::infinity());
-
-        auto dist_oob = GraphAlgorithms::Dijkstra(g, 100, car);
-        REQUIRE(dist_oob.size() == g.getNumberOfVertices());
-        CHECK(dist_oob[idA] == std::numeric_limits<double>::infinity());
+        CHECK_THROWS_AS(GraphAlgorithms::Dijkstra(g, -1, car), std::out_of_range);
+        CHECK_THROWS_AS(GraphAlgorithms::Dijkstra(g, 100, car), std::out_of_range);
     }
 }
 
 TEST_SUITE("isConnectedTestSuite") {
 
+    /**
+     * @brief Tests 'isConnected' on a connected undirected graph
+     */
     TEST_CASE("undirected connected") {
         AdjacencyList<City, Edge> g(false);
         City* a = new City("A", 1000);
@@ -256,6 +287,9 @@ TEST_SUITE("isConnectedTestSuite") {
         CHECK(GraphAlgorithms::isConnected(g));
     }
 
+    /**
+     * @brief Tests 'isConnected' on a disconnected undirected graph
+     */
     TEST_CASE("undirected disconnected") {
         AdjacencyList<City, Edge> g(false);
         City* a = new City("A", 1000);
@@ -269,6 +303,9 @@ TEST_SUITE("isConnectedTestSuite") {
         CHECK_FALSE(GraphAlgorithms::isConnected(g));
     }
 
+    /**
+     * @brief Tests 'isConnected' on a strongly connected directed graph
+     */
     TEST_CASE("directed strongly connected") {
         AdjacencyList<City, Edge> g(true);
         City* a = new City("A", 1000);
@@ -285,6 +322,9 @@ TEST_SUITE("isConnectedTestSuite") {
         CHECK(GraphAlgorithms::isConnected(g));
     }
 
+    /**
+     * @brief Tests 'isConnected' on a weakly connected directed graph
+     */
     TEST_CASE("directed weakly connected") {
         AdjacencyList<City, Edge> g(true);
         City* a = new City("A", 1000);
@@ -299,6 +339,9 @@ TEST_SUITE("isConnectedTestSuite") {
         CHECK_FALSE(GraphAlgorithms::isConnected(g));
     }
 
+    /**
+     * @brief Tests 'isConnected' on a disconnected directed graph
+     */
     TEST_CASE("directed disconnected") {
         AdjacencyList<City, Edge> g(true);
         City* a = new City("A", 1000);
